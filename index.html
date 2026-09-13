@@ -44,20 +44,33 @@
         #print-view { display: none; }
 
         @media print {
-            @page { size: A4 landscape; margin: 0.6cm; }
+            @page { size: A4 landscape; margin: 1cm; }
             html, body { height: 100%; background: #fff !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
             .no-print, #app-view, #toast-container { display: none !important; }
             #print-view { display: block !important; }
-            .print-page { page-break-after: always; }
-            .print-page:last-child { page-break-after: auto; }
-            .print-week-grid { display: grid; grid-template-columns: repeat(7, 1fr); border: 1px solid #cbd5e1; }
-            .print-week-header, .print-day-cell { border: 1px solid #cbd5e1; }
+
+            /* El folio (A4 landscape) menos los márgenes del @page: 29.7cm x 21cm - 2cm = 27.7cm x 19cm */
+            .print-page { width: 27.7cm; height: 19cm; display: flex; flex-direction: column; gap: 0.25cm; page-break-after: avoid; overflow: hidden; }
+
+            .print-header { flex: 0 0 auto; display: flex; align-items: center; gap: 0.5cm; border-bottom: 2px solid #009abb; padding-bottom: 0.2cm; }
+            .print-header svg { height: 1.5cm; width: auto; flex-shrink: 0; }
+            .print-header-school { font-size: 9px; text-transform: uppercase; letter-spacing: .05em; font-weight: 700; color: #b4be00 !important; }
+            .print-header-title { font-size: 16px; font-weight: 700; color: #009abb !important; }
+            .print-header-filter { margin-left: auto; font-size: 11px; font-weight: 600; color: #475569 !important; text-align: right; }
+
+            .print-weekday-row { flex: 0 0 auto; display: grid; grid-template-columns: repeat(7, 1fr); border: 1px solid #cbd5e1; }
+            .print-weeks { flex: 1 1 auto; display: flex; flex-direction: column; min-height: 0; }
+            .print-week-grid { flex: 1 1 0; min-height: 0; display: grid; grid-template-columns: repeat(7, 1fr); border-left: 1px solid #cbd5e1; border-right: 1px solid #cbd5e1; border-bottom: 1px solid #cbd5e1; }
+
+            .print-week-header, .print-day-cell { border-right: 1px solid #cbd5e1; }
+            .print-week-header:last-child, .print-day-cell:last-child { border-right: none; }
             .print-week-header { background: #f1f5f9 !important; text-align: center; font-size: 9px; font-weight: 700; text-transform: uppercase; padding: 3px 0; color: #475569 !important; }
-            .print-day-cell { padding: 2px; display: flex; flex-direction: column; gap: 2px; }
-            .print-day-number { font-size: 9px; font-weight: 700; color: #94a3b8 !important; text-align: right; }
-            .print-exam-card { border: 1px solid; border-radius: 3px; padding: 2px 3px; font-size: 8px; line-height: 1.15; }
-            .print-exam-subject { font-weight: 700; }
-            .print-exam-meta { opacity: .8; font-size: 7px; }
+            .print-day-cell { padding: 2px; display: flex; flex-direction: column; gap: 1px; min-height: 0; overflow: hidden; }
+            .print-day-number { font-size: 9px; font-weight: 700; color: #94a3b8 !important; text-align: right; flex-shrink: 0; }
+            .print-exam-card { border: 1px solid; border-radius: 3px; padding: 1px 3px; font-size: 7.5px; line-height: 1.15; overflow: hidden; flex-shrink: 0; }
+            .print-exam-subject { font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+            .print-exam-meta { opacity: .8; font-size: 7px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+            .print-exam-more { font-size: 7px; font-weight: 700; color: #64748b !important; flex-shrink: 0; }
         }
     </style>
 </head>
@@ -69,7 +82,7 @@
     <!-- HEADER CON LOGO SVG VECTORIAL Y ESTILOS CORPORATIVOS -->
     <header class="bg-white border-b border-slate-200 shadow-sm sticky top-0 z-40">
         <div class="w-full bg-white py-4 px-4 flex justify-center border-b border-slate-100">
-            <svg id="Capa_1" xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 992.1 992.1" class="w-full max-h-48 h-auto">
+            <svg id="Capa_1" xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="158 636 676 232" class="w-full max-h-56 h-auto">
               <defs>
                 <style>
                   .st0 { fill: #b4be00; }
@@ -253,16 +266,10 @@
             </div>
 
             <div class="flex flex-col gap-2 pt-3 border-t">
-                <label class="block text-xs font-bold uppercase text-slate-500 tracking-wider">3. Formato</label>
-                <div class="flex gap-2">
-                    <button onclick="triggerPrint(false)" class="flex-1 bg-corp-blue hover:bg-corp-darkblue text-white font-medium px-4 py-2 rounded-lg text-xs flex items-center justify-center gap-1.5">
-                        <i data-lucide="printer" class="w-4 h-4"></i> 1 página
-                    </button>
-                    <button onclick="triggerPrint(true)" class="flex-1 bg-corp-blue hover:bg-corp-darkblue text-white font-medium px-4 py-2 rounded-lg text-xs flex items-center justify-center gap-1.5">
-                        <i data-lucide="printer" class="w-4 h-4"></i> 2 páginas
-                    </button>
-                </div>
-                <p class="text-[11px] text-slate-400">En el diálogo de impresión del navegador puedes elegir una impresora o "Guardar como PDF".</p>
+                <button onclick="triggerPrint()" class="bg-corp-blue hover:bg-corp-darkblue text-white font-medium px-4 py-2 rounded-lg text-xs flex items-center justify-center gap-1.5">
+                    <i data-lucide="printer" class="w-4 h-4"></i> Imprimir
+                </button>
+                <p class="text-[11px] text-slate-400">Se ajusta a un folio A4 apaisado con el logo y el filtro elegido. En el diálogo de impresión del navegador puedes elegir una impresora o "Guardar como PDF".</p>
                 <button type="button" onclick="closePrintModal()" class="self-end px-3 py-1.5 border rounded-lg text-xs mt-1">Cancelar</button>
             </div>
         </div>
@@ -665,13 +672,13 @@
             renderPrintItineraryFilters();
         }
 
-        function triggerPrint(twoPage) {
+        function triggerPrint() {
             closePrintModal();
             const prevClass = selectedClassFilter;
             const prevItinerary = selectedItineraryFilter;
             selectedClassFilter = printClassFilter;
             selectedItineraryFilter = printItineraryFilter;
-            printCalendar(twoPage);
+            printCalendar();
             selectedClassFilter = prevClass;
             selectedItineraryFilter = prevItinerary;
         }
@@ -976,24 +983,37 @@
             });
         }
 
-        function renderPrintDayCell(year, month, day) {
+        // Máximo de exámenes que se muestran por celda en la vista de impresión
+        // (cada celda tiene una altura fija, para que la rejilla completa
+        // quepa siempre en un folio: menos semanas en el mes = filas más
+        // altas = caben más exámenes). Si hay más, se indica "+N más".
+        function printMaxExamsPerDay(numWeeks) {
+            if (numWeeks <= 4) return 5;
+            if (numWeeks === 5) return 4;
+            return 3;
+        }
+
+        function renderPrintDayCell(year, month, day, maxPerDay) {
             if (!day) return `<div class="print-day-cell bg-white"></div>`;
             const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
             const dayExams = examsForDay(dateStr);
-            const cards = dayExams.map(e => {
+            const shown = dayExams.slice(0, maxPerDay);
+            const extra = dayExams.length - shown.length;
+            const cards = shown.map(e => {
                 const teacherInfo = TEACHER_DATA[e.teacher];
                 const colorClasses = teacherInfo ? teacherInfo.color : "bg-sky-50 border-sky-200 text-slate-800";
+                const meta = `${e.className}${e.itinerary ? ' (' + e.itinerary + ')' : ''} · ${e.teacher || ''}`;
                 return `<div class="print-exam-card ${colorClasses}">
                     <div class="print-exam-subject">${e.subject}</div>
-                    <div class="print-exam-meta">${e.className}${e.itinerary ? ' (' + e.itinerary + ')' : ''}</div>
-                    <div class="print-exam-meta">${e.teacher || ''}</div>
+                    <div class="print-exam-meta">${meta}</div>
                 </div>`;
             }).join('');
-            return `<div class="print-day-cell bg-white"><div class="print-day-number">${day}</div>${cards}</div>`;
+            const more = extra > 0 ? `<div class="print-exam-more">+${extra} más</div>` : '';
+            return `<div class="print-day-cell bg-white"><div class="print-day-number">${day}</div>${cards}${more}</div>`;
         }
 
-        function renderWeekGrid(year, month, week) {
-            return `<div class="print-week-grid">${week.map(day => renderPrintDayCell(year, month, day)).join('')}</div>`;
+        function renderWeekGrid(year, month, week, maxPerDay) {
+            return `<div class="print-week-grid">${week.map(day => renderPrintDayCell(year, month, day, maxPerDay)).join('')}</div>`;
         }
 
         function currentFilterLabel() {
@@ -1002,45 +1022,30 @@
             return label;
         }
 
-        function printCalendar(twoPage) {
+        function printCalendar() {
             const year = currentDate.getFullYear();
             const month = currentDate.getMonth();
             const monthLabel = `${new Date(year, month).toLocaleString('es', {month: 'long'})} ${year}`;
             const weeks = buildWeeksMatrix(year, month);
-            const weekdayHeader = `<div class="print-week-grid">${['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'].map(d => `<div class="print-week-header">${d}</div>`).join('')}</div>`;
+            const weekdayHeader = `<div class="print-weekday-row">${['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'].map(d => `<div class="print-week-header">${d}</div>`).join('')}</div>`;
+            const logoSvg = document.getElementById("Capa_1").outerHTML;
 
             const pageHeader = `
-                <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:6px;">
+                <div class="print-header">
+                    ${logoSvg}
                     <div>
-                        <div style="font-size:9px; text-transform:uppercase; letter-spacing:.05em; font-weight:700; color:#b4be00;">Bachillerato — Escuelas Salesianas María Auxiliadora</div>
-                        <div style="font-size:14px; font-weight:700; color:#009abb;">Calendario de Exámenes — ${monthLabel}</div>
+                        <div class="print-header-school">Bachillerato — Escuelas Salesianas María Auxiliadora</div>
+                        <div class="print-header-title">Calendario de Exámenes — ${monthLabel}</div>
                     </div>
-                    <div style="font-size:10px; font-weight:600; color:#475569;">${currentFilterLabel()}</div>
+                    <div class="print-header-filter">${currentFilterLabel()}</div>
                 </div>`;
 
-            let html;
-            if (!twoPage || weeks.length <= 4) {
-                html = `<div class="print-page" style="padding:4px 2px;">
-                    ${pageHeader}
-                    ${weekdayHeader}
-                    ${weeks.map(w => renderWeekGrid(year, month, w)).join('')}
-                </div>`;
-            } else {
-                const mid = Math.ceil(weeks.length / 2);
-                const firstHalf = weeks.slice(0, mid);
-                const secondHalf = weeks.slice(mid);
-                html = `
-                    <div class="print-page" style="padding:4px 2px;">
-                        ${pageHeader}
-                        ${weekdayHeader}
-                        ${firstHalf.map(w => renderWeekGrid(year, month, w)).join('')}
-                    </div>
-                    <div class="print-page" style="padding:4px 2px;">
-                        ${pageHeader}
-                        ${weekdayHeader}
-                        ${secondHalf.map(w => renderWeekGrid(year, month, w)).join('')}
-                    </div>`;
-            }
+            const maxPerDay = printMaxExamsPerDay(weeks.length);
+            const html = `<div class="print-page">
+                ${pageHeader}
+                ${weekdayHeader}
+                <div class="print-weeks">${weeks.map(w => renderWeekGrid(year, month, w, maxPerDay)).join('')}</div>
+            </div>`;
 
             document.getElementById("print-view").innerHTML = html;
             window.print();
