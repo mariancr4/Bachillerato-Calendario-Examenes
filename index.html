@@ -82,7 +82,7 @@
     <!-- HEADER CON LOGO SVG VECTORIAL Y ESTILOS CORPORATIVOS -->
     <header class="bg-white border-b border-slate-200 shadow-sm sticky top-0 z-40">
         <div class="w-full bg-white py-4 px-4 flex justify-center border-b border-slate-100">
-            <svg id="Capa_1" xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="158 636 676 232" class="w-full max-h-32 h-auto">
+            <svg id="Capa_1" xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="158 636 676 232" class="w-full max-h-56 h-auto">
               <defs>
                 <style>
                   .st0 { fill: #b4be00; }
@@ -510,8 +510,7 @@
         let exams = [];
         let selectedClassFilter = "ALL";
         let selectedItineraryFilter = "ALL";
-        const today = new Date();
-        let currentDate = new Date(today.getFullYear(), today.getMonth(), 1);
+        let currentDate = new Date(2026, 2, 1);
 
         document.addEventListener("DOMContentLoaded", () => {
             renderTeacherDropdown();
