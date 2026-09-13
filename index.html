@@ -510,7 +510,8 @@
         let exams = [];
         let selectedClassFilter = "ALL";
         let selectedItineraryFilter = "ALL";
-        let currentDate = new Date(2026, 2, 1);
+        const today = new Date();
+        let currentDate = new Date(today.getFullYear(), today.getMonth(), 1);
 
         document.addEventListener("DOMContentLoaded", () => {
             renderTeacherDropdown();
